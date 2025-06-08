@@ -1,0 +1,22 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: otel-pod-mutation-webhook-cert
+  namespace: otel-pod-mutation-system
+spec:
+  secretName: otel-pod-mutation-webhook-certs
+  issuerRef:
+    name: otel-pod-mutation-selfsigned-issuer
+    kind: Issuer
+  commonName: otel-pod-mutation-webhook.otel-pod-mutation-system.svc
+  dnsNames:
+  - otel-pod-mutation-webhook.otel-pod-mutation-system.svc
+  - otel-pod-mutation-webhook.otel-pod-mutation-system.svc.cluster.local
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: otel-pod-mutation-selfsigned-issuer
+  namespace: otel-pod-mutation-system
+spec:
+  selfSigned: {}

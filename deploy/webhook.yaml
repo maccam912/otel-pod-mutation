@@ -1,0 +1,21 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionWebhook
+metadata:
+  name: otel-pod-mutation-webhook
+  annotations:
+    cert-manager.io/inject-ca-from: otel-pod-mutation-system/otel-pod-mutation-webhook-cert
+webhooks:
+- name: otel-pod-mutation.rackspace.koski.co
+  clientConfig:
+    service:
+      name: otel-pod-mutation-webhook
+      namespace: otel-pod-mutation-system
+      path: "/mutate"
+  rules:
+  - operations: ["CREATE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
+  admissionReviewVersions: ["v1", "v1beta1"]
+  sideEffects: None
+  failurePolicy: Ignore

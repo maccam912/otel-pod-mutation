@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-pod-mutation-webhook
+  namespace: otel-pod-mutation-system
+  labels:
+    app: otel-pod-mutation-webhook
+spec:
+  selector:
+    app: otel-pod-mutation-webhook
+  ports:
+  - name: webhook-api
+    port: 443
+    targetPort: 8443
+    protocol: TCP
