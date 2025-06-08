@@ -65,14 +65,14 @@ For local development:
 docker build -t harbor.rackspace.koski.co/library/otel-pod-mutation:latest .
 ```
 
-For Kubernetes environments (self-hosted runners), the CI/CD pipeline uses Buildah to build images without requiring a Docker daemon.
+For Kubernetes environments (self-hosted runners), the CI/CD pipeline uses Docker Buildx with a Docker-in-Docker setup to build images.
 
 ## GitHub Actions
 
 The project includes a CI/CD pipeline that:
 
 1. Runs tests and code quality checks
-2. Builds and pushes Docker images to Harbor registry using Buildah and Podman (compatible with Kubernetes runners)
+2. Builds and pushes Docker images to Harbor registry using Docker Buildx (compatible with Kubernetes runners)
 3. Runs security scans with Trivy
 
 Required secrets:
