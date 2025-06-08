@@ -60,16 +60,19 @@ go test -v ./...
 
 ### Building Docker image
 
+For local development:
 ```bash
 docker build -t harbor.rackspace.koski.co/library/otel-pod-mutation:latest .
 ```
+
+For Kubernetes environments (self-hosted runners), the CI/CD pipeline uses Kaniko to build images without requiring Docker daemon access.
 
 ## GitHub Actions
 
 The project includes a CI/CD pipeline that:
 
 1. Runs tests and code quality checks
-2. Builds and pushes Docker images to Harbor registry
+2. Builds and pushes Docker images to Harbor registry using Kaniko (compatible with Kubernetes runners)
 3. Runs security scans with Trivy
 
 Required secrets:
