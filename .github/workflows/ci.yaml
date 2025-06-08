@@ -85,6 +85,8 @@ jobs:
       id: build-image
       uses: redhat-actions/buildah-build@v2
       with:
+        storage-driver: vfs
+        isolation: chroot
         context: .
         containerfiles: ./Dockerfile
         image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
