@@ -87,9 +87,12 @@ jobs:
       run: |
         CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o webhook .
 
-    - name: Log in to Harbor
-      run: |
-        echo "${{ secrets.HARBOR_PASSWORD }}" | docker login ${{ env.REGISTRY }} -u "${{ secrets.HARBOR_USERNAME }}" --password-stdin
+    - name: Log in to Harbor registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ secrets.HARBOR_USERNAME }}
+        password: ${{ secrets.HARBOR_PASSWORD }}
 
     - name: Build and push Docker image
       run: |
