@@ -15,7 +15,6 @@ import (
 
 	admissionv1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/klog/v2"
@@ -43,7 +42,7 @@ type patchOperation struct {
 
 func main() {
 	klog.InitFlags(nil)
-	
+
 	certPath := getEnv("TLS_CERT_FILE", "/etc/certs/tls.crt")
 	keyPath := getEnv("TLS_KEY_FILE", "/etc/certs/tls.key")
 	port := getEnv("WEBHOOK_PORT", "8443")
@@ -79,7 +78,7 @@ func main() {
 	klog.Info("Shutting down webhook server...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	
+
 	if err := webhookServer.server.Shutdown(ctx); err != nil {
 		klog.Fatalf("Failed to shutdown webhook server: %v", err)
 	}
@@ -109,7 +108,7 @@ func (ws *WebhookServer) mutate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	patches := createPatchesForPod(&pod)
-	
+
 	patchBytes, err := json.Marshal(patches)
 	if err != nil {
 		klog.Errorf("Failed to marshal patches: %v", err)

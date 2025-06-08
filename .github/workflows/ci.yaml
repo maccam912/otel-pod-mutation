@@ -29,8 +29,17 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
+    - name: Tidy dependencies
+      run: go mod tidy
+
+    - name: Verify dependencies
+      run: go mod verify
+
     - name: Download dependencies
       run: go mod download
+
+    - name: Build binary
+      run: go build -o webhook .
 
     - name: Run tests
       run: go test -v ./...
@@ -44,6 +53,22 @@ jobs:
           echo "Code is not formatted properly:"
           gofmt -s -l .
           exit 1
+        fi
+
+    - name: Check for suspicious constructs
+      run: |
+        if command -v staticcheck >/dev/null 2>&1; then
+          staticcheck ./...
+        else
+          echo "staticcheck not available, skipping"
+        fi
+
+    - name: Check for ineffective assignments
+      run: |
+        if command -v ineffassign >/dev/null 2>&1; then
+          ineffassign ./...
+        else
+          echo "ineffassign not available, skipping"
         fi
 
   build-and-push:
