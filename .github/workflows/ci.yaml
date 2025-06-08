@@ -91,6 +91,8 @@ jobs:
         containerfiles: ./Dockerfile
         image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: ${{ github.sha }} latest
+        extra-args: |
+          --storage-driver=vfs
 
     - name: Log in to Harbor registry
       uses: redhat-actions/podman-login@v1
