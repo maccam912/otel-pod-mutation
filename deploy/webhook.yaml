@@ -1,5 +1,5 @@
-apiVersion: admissionregistration.k8s.io/v1beta1
-kind: MutatingAdmissionWebhookConfiguration
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
 metadata:
   name: otel-pod-mutation-webhook
   annotations:
