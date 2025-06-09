@@ -10,7 +10,7 @@
       "WebFetch(domain:github.com)",
       "Bash(kubectl get pods:*)",
       "Bash(kubectl logs:*)",
-      "Bash(kubectl describe:*)"
+      "Bash(kubectl describe:*)",
     ],
     "deny": []
   }
