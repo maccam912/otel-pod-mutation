@@ -86,6 +86,7 @@ jobs:
         buildah login -u "${{ secrets.HARBOR_USERNAME }}" -p "${{ secrets.HARBOR_PASSWORD }}" ${{ env.REGISTRY }}
         
         buildah build \
+          --isolation chroot \
           --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
           --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
           .
