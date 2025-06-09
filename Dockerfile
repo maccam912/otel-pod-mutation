@@ -17,6 +17,8 @@ WORKDIR /root/
 
 COPY --from=builder /app/webhook .
 
+RUN chmod +x webhook
+
 USER 65534:65534
 
 EXPOSE 8443

@@ -7,7 +7,10 @@
       "Bash(go test:*)",
       "Bash(go vet:*)",
       "Bash(gofmt:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(kubectl get pods:*)",
+      "Bash(kubectl logs:*)",
+      "Bash(kubectl describe:*)"
     ],
     "deny": []
   }
