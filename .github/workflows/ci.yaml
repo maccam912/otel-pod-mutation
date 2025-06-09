@@ -76,19 +76,15 @@ jobs:
       with:
         go-version: '1.21'
 
-    - name: Log in to registry
-      run: |
-        buildah login -u "${{ secrets.HARBOR_USERNAME }}" -p "${{ secrets.HARBOR_PASSWORD }}" ${{ env.REGISTRY }}
-
-    - name: Build image with Buildah
-      run: |
-        buildah bud --format docker -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
-
-    - name: Push image to registry
-      run: |
-        buildah push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        buildah tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-        buildah push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+    - name: Build and push image with Kaniko
+      uses: aevea/action-kaniko@v0.14.0
+      with:
+        registry: ${{ env.REGISTRY }}
+        image: ${{ env.IMAGE_NAME }}
+        username: ${{ secrets.HARBOR_USERNAME }}
+        password: ${{ secrets.HARBOR_PASSWORD }}
+        tag: ${{ github.sha }}
+        tag_with_latest: true
 
   security-scan:
     runs-on: otel-pod-mutation-set
