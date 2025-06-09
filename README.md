@@ -65,14 +65,14 @@ For local development:
 docker build -t harbor.rackspace.koski.co/library/otel-pod-mutation:latest .
 ```
 
-For Kubernetes environments (self-hosted runners), the CI/CD pipeline uses **Kaniko** running on **containerd** to build container images without needing a Docker daemon.
+For Kubernetes environments (self-hosted runners), the CI/CD pipeline uses **Kaniko** running on **containerd** to build container images without needing a Docker daemon. The workflow pulls and runs Kaniko with the `native` snapshotter so it can operate in an unprivileged environment.
 
 ## GitHub Actions
 
 The project includes a CI/CD pipeline that:
 
 1. Runs tests and code quality checks
-2. Builds and pushes Docker images to Harbor registry using Kaniko with containerd (compatible with ARC Kubernetes runners)
+2. Builds and pushes Docker images to Harbor registry using Kaniko with containerd's `native` snapshotter (compatible with ARC Kubernetes runners)
 3. Runs security scans with Trivy
 
 Required secrets:

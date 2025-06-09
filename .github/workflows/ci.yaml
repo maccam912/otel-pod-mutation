@@ -86,8 +86,8 @@ jobs:
         cat > "$HOME/.docker/config.json" <<EOF
         {"auths": {"${{ env.REGISTRY }}": {"auth": "$auth"}}}
         EOF
-        sudo ctr image pull gcr.io/kaniko-project/executor:latest
-        sudo ctr run --rm --net-host \
+        CONTAINERD_SNAPSHOTTER=native sudo ctr image pull gcr.io/kaniko-project/executor:latest
+        CONTAINERD_SNAPSHOTTER=native sudo ctr run --rm --net-host \
           -v "$(pwd)":/workspace \
           -v "$HOME/.docker":/kaniko/.docker \
           gcr.io/kaniko-project/executor:latest kaniko \
