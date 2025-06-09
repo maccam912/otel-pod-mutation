@@ -76,15 +76,25 @@ jobs:
       with:
         go-version: '1.21'
 
-    - name: Build and push image with Kaniko
-      uses: aevea/action-kaniko@v0.14.0
-      with:
-        registry: ${{ env.REGISTRY }}
-        image: ${{ env.IMAGE_NAME }}
-        username: ${{ secrets.HARBOR_USERNAME }}
-        password: ${{ secrets.HARBOR_PASSWORD }}
-        tag: ${{ github.sha }}
-        tag_with_latest: true
+    - name: Set up containerd
+      uses: crazy-max/ghaction-setup-containerd@v3
+
+    - name: Build and push image with Kaniko using containerd
+      run: |
+        mkdir -p "$HOME/.docker"
+        auth=$(printf "%s:%s" "${{ secrets.HARBOR_USERNAME }}" "${{ secrets.HARBOR_PASSWORD }}" | base64)
+        cat > "$HOME/.docker/config.json" <<EOF
+        {"auths": {"${{ env.REGISTRY }}": {"auth": "$auth"}}}
+        EOF
+        sudo ctr image pull gcr.io/kaniko-project/executor:latest
+        sudo ctr run --rm --net-host \
+          -v "$(pwd)":/workspace \
+          -v "$HOME/.docker":/kaniko/.docker \
+          gcr.io/kaniko-project/executor:latest kaniko \
+          --context=dir:///workspace \
+          --dockerfile=/workspace/Dockerfile \
+          --destination=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+          --destination=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
   security-scan:
     runs-on: otel-pod-mutation-set
