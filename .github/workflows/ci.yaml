@@ -99,20 +99,3 @@ jobs:
         buildah push --storage-driver vfs ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         buildah push --storage-driver vfs ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-  security-scan:
-    runs-on: otel-pod-mutation-set
-    needs: build-and-push
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
