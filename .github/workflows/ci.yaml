@@ -76,25 +76,22 @@ jobs:
       with:
         go-version: '1.21'
 
-    - name: Set up containerd
-      uses: crazy-max/ghaction-setup-containerd@v3
-
-    - name: Build and push image with Kaniko using containerd
+    - name: Install Buildah
       run: |
-        mkdir -p "$HOME/.docker"
-        auth=$(printf "%s:%s" "${{ secrets.HARBOR_USERNAME }}" "${{ secrets.HARBOR_PASSWORD }}" | base64)
-        cat > "$HOME/.docker/config.json" <<EOF
-        {"auths": {"${{ env.REGISTRY }}": {"auth": "$auth"}}}
-        EOF
-        CONTAINERD_SNAPSHOTTER=native sudo ctr image pull gcr.io/kaniko-project/executor:latest
-        CONTAINERD_SNAPSHOTTER=native sudo ctr run --rm --net-host \
-          -v "$(pwd)":/workspace \
-          -v "$HOME/.docker":/kaniko/.docker \
-          gcr.io/kaniko-project/executor:latest kaniko \
-          --context=dir:///workspace \
-          --dockerfile=/workspace/Dockerfile \
-          --destination=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-          --destination=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        sudo apt-get update
+        sudo apt-get install -y buildah
+
+    - name: Build and push image with Buildah
+      run: |
+        buildah login -u "${{ secrets.HARBOR_USERNAME }}" -p "${{ secrets.HARBOR_PASSWORD }}" ${{ env.REGISTRY }}
+        
+        buildah build \
+          --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+          --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+          .
+        
+        buildah push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        buildah push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
   security-scan:
     runs-on: otel-pod-mutation-set
