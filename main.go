@@ -183,6 +183,8 @@ func (ws *WebhookServer) mutate(w http.ResponseWriter, r *http.Request) {
 
 	req := review.Request
 	klog.V(2).Infof("Processing admission request for kind: %s, namespace: %s, name: %s", req.Kind.Kind, req.Namespace, req.Name)
+	klog.V(3).Infof("Admission request details: operation=%s, userInfo=%+v", req.Operation, req.UserInfo)
+	klog.V(3).Infof("Request kind: Group=%s, Version=%s, Kind=%s", req.Kind.Group, req.Kind.Version, req.Kind.Kind)
 
 	var pod corev1.Pod
 	if err := json.Unmarshal(req.Object.Raw, &pod); err != nil {
@@ -193,6 +195,22 @@ func (ws *WebhookServer) mutate(w http.ResponseWriter, r *http.Request) {
 	}
 	klog.V(2).Infof("Successfully unmarshaled pod: %s/%s", pod.Namespace, pod.Name)
 	klog.V(3).Infof("Pod annotations: %+v", pod.Annotations)
+	klog.V(3).Infof("Pod labels: %+v", pod.Labels)
+	klog.V(4).Infof("Complete pod spec: %+v", pod.Spec)
+
+	// Log container information for debugging
+	klog.V(3).Infof("Pod has %d containers:", len(pod.Spec.Containers))
+	for i, container := range pod.Spec.Containers {
+		klog.V(3).Infof("  Container[%d]: name=%s, image=%s", i, container.Name, container.Image)
+		klog.V(4).Infof("  Container[%d] env vars: %+v", i, container.Env)
+	}
+
+	if len(pod.Spec.InitContainers) > 0 {
+		klog.V(3).Infof("Pod has %d init containers:", len(pod.Spec.InitContainers))
+		for i, container := range pod.Spec.InitContainers {
+			klog.V(3).Infof("  InitContainer[%d]: name=%s, image=%s", i, container.Name, container.Image)
+		}
+	}
 
 	klog.V(2).Info("Creating patches for pod...")
 	patches := createPatchesForPod(&pod)
@@ -225,6 +243,16 @@ func (ws *WebhookServer) mutate(w http.ResponseWriter, r *http.Request) {
 		response.Patch = patchBytes
 		klog.Infof("Applied OpenTelemetry instrumentation patch to pod %s/%s", pod.Namespace, pod.Name)
 		klog.V(3).Infof("Response now includes %d patches", len(patches))
+
+		// Show what the annotations will look like after patching
+		expectedAnnotations := make(map[string]string)
+		if pod.Annotations != nil {
+			for k, v := range pod.Annotations {
+				expectedAnnotations[k] = v
+			}
+		}
+		expectedAnnotations[otelAnnotationKey] = otelAnnotationValue
+		klog.V(3).Infof("Pod annotations after patching will be: %+v", expectedAnnotations)
 	} else {
 		klog.V(2).Info("No patches needed for this pod")
 	}

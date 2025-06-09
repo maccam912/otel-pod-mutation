@@ -6,7 +6,7 @@ metadata:
   labels:
     app: otel-pod-mutation-webhook
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: otel-pod-mutation-webhook
@@ -34,6 +34,15 @@ spec:
           value: /etc/certs/tls.key
         - name: WEBHOOK_PORT
           value: "8443"
+        # Enable extensive debug logging
+        - name: KLOG_V
+          value: "4"
+        - name: KLOG_LOGTOSTDERR
+          value: "true"
+        - name: KLOG_ALSOLOGTOSTDERR
+          value: "true"
+        - name: KLOG_STDERRTHRESHOLD
+          value: "INFO"
         livenessProbe:
           httpGet:
             path: /health

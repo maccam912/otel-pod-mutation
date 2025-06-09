@@ -46,6 +46,37 @@ The webhook can be configured via environment variables:
 
 ## Development
 
+### Code Formatting and Quality
+
+This project uses pre-commit hooks to automatically format Go code with `gofmt` before each commit.
+
+#### Setting up pre-commit hooks
+
+The Git pre-commit hook is automatically installed when you clone the repository. You can also optionally use the `pre-commit` tool:
+
+```bash
+# Install pre-commit (optional)
+pip install pre-commit
+pre-commit install
+```
+
+#### Manual formatting
+
+To format all Go files manually:
+
+```bash
+gofmt -w .
+```
+
+Or using the Makefile (if make is available):
+
+```bash
+make fmt          # Format code
+make vet          # Run go vet
+make test         # Run tests
+make check        # Run all checks (fmt, vet, test)
+```
+
 ### Building locally
 
 ```bash
