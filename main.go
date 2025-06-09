@@ -44,7 +44,7 @@ func main() {
 	klog.InitFlags(nil)
 	klog.Info("=== WEBHOOK STARTUP BEGIN ===")
 	klog.V(2).Info("Debug logging enabled - trace level")
-	
+
 	// Log all environment variables for debugging
 	klog.V(2).Info("Environment variables:")
 	for _, env := range os.Environ() {
@@ -59,7 +59,7 @@ func main() {
 
 	// Check if certificate files exist and are readable
 	klog.V(2).Info("Checking certificate files...")
-	
+
 	// List the certificate directory
 	certDir := "/etc/certs"
 	klog.V(2).Infof("Listing certificate directory: %s", certDir)
@@ -72,7 +72,7 @@ func main() {
 			klog.V(2).Infof("  %s (mode: %v, size: %d)", entry.Name(), info.Mode(), info.Size())
 		}
 	}
-	
+
 	if stat, err := os.Stat(certPath); os.IsNotExist(err) {
 		klog.Errorf("Certificate file does not exist: %s", certPath)
 	} else if err != nil {
@@ -115,7 +115,7 @@ func main() {
 
 	klog.Info("Starting webhook server...")
 	klog.V(2).Infof("About to start ListenAndServeTLS on port %s", port)
-	
+
 	// Add channel for server startup errors
 	startupErrChan := make(chan error, 1)
 	go func() {
@@ -141,7 +141,7 @@ func main() {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 	klog.Info("Webhook server is ready and waiting for signals...")
-	
+
 	sig := <-signalChan
 	klog.Infof("Received signal: %v", sig)
 
@@ -162,7 +162,7 @@ func main() {
 func (ws *WebhookServer) mutate(w http.ResponseWriter, r *http.Request) {
 	klog.V(2).Infof("=== MUTATE REQUEST START === Method: %s, URL: %s, RemoteAddr: %s", r.Method, r.URL.Path, r.RemoteAddr)
 	klog.V(3).Infof("Request headers: %+v", r.Header)
-	
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		klog.Errorf("Failed to read request body: %v", err)
@@ -183,7 +183,7 @@ func (ws *WebhookServer) mutate(w http.ResponseWriter, r *http.Request) {
 
 	req := review.Request
 	klog.V(2).Infof("Processing admission request for kind: %s, namespace: %s, name: %s", req.Kind.Kind, req.Namespace, req.Name)
-	
+
 	var pod corev1.Pod
 	if err := json.Unmarshal(req.Object.Raw, &pod); err != nil {
 		klog.Errorf("Failed to unmarshal pod: %v", err)
@@ -274,7 +274,7 @@ func createPatchesForPod(pod *corev1.Pod) []patchOperation {
 		klog.V(2).Infof("OpenTelemetry annotation not found, adding it with value: %s", otelAnnotationValue)
 		escapedKey := escapeJSONPointer(otelAnnotationKey)
 		klog.V(3).Infof("Escaped annotation key: %s -> %s", otelAnnotationKey, escapedKey)
-		
+
 		if pod.Annotations == nil {
 			klog.V(3).Info("Adding annotation to nil annotations map")
 			patches = append(patches, patchOperation{

@@ -1,16 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mkdir:*)",
-      "Bash(go mod:*)",
-      "Bash(go build:*)",
-      "Bash(go test:*)",
-      "Bash(go vet:*)",
-      "Bash(gofmt:*)",
-      "WebFetch(domain:github.com)",
-      "Bash(kubectl get pods:*)",
-      "Bash(kubectl logs:*)",
-      "Bash(kubectl describe:*)",
+      "Bash(go fmt:*)"
     ],
     "deny": []
   }
