@@ -83,7 +83,7 @@ jobs:
 
     - name: Build and push image with Buildah
       run: |
-        buildah login -u "${{ secrets.HARBOR_USERNAME }}" -p "${{ secrets.HARBOR_PASSWORD }}" ${{ env.REGISTRY }}/v2/
+        buildah login -u "${{ secrets.HARBOR_USERNAME }}" -p "${{ secrets.HARBOR_PASSWORD }}" ${{ env.REGISTRY }}
         
         buildah build \
           --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
