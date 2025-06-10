@@ -8,6 +8,7 @@ RUN go mod download
 COPY . .
 
 RUN go build -o webhook .
+RUN chmod a+x webhook
 
 RUN apk --no-cache add ca-certificates
 
