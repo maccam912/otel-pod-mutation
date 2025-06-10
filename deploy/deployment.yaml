@@ -64,17 +64,7 @@ spec:
           requests:
             cpu: 250m
             memory: 64Mi
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 65534
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
       volumes:
       - name: certs
         secret:
           secretName: otel-pod-mutation-webhook-certs
-      securityContext:
-        fsGroup: 65534
